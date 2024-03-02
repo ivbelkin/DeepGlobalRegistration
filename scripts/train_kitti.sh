@@ -68,4 +68,4 @@ python train.py \
 # Test
 python -m scripts.test_kitti \
 	--kitti_dir ${KITTI_PATH} \
-	--save_dir ${OUT_DIR} | tee -a $LOG
+	--out_dir ${OUT_DIR} | tee -a $LOG

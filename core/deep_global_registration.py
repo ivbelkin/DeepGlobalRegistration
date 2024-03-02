@@ -155,7 +155,7 @@ class DeepGlobalRegistration:
     xyz = torch.from_numpy(xyz[sel]).to(self.device)
 
     # ME standard batch coordinates
-    coords = ME.utils.batched_coordinates([torch.floor(xyz / self.voxel_size).int()], device=self.device)
+    coords = ME.utils.batched_coordinates([torch.floor(xyz / self.voxel_size).type(torch.IntTensor)], device=self.device)
     feats = torch.ones(npts, 1)
 
     return xyz.float(), coords, feats

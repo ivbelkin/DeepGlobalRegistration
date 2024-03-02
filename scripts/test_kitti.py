@@ -104,12 +104,6 @@ def evaluate(config, data_loader, method):
 
     # Save results
     filename = f'kitti-stats_{method.__class__.__name__}'
-    if config.out_filename is not None:
-        filename += f'_{config.out_filename}'
-    if isinstance(method, FCGFWrapper):
-        filename += '_' + method.method
-        if 'ransac' in method.method:
-            filename += f'_{config.ransac_iter}'
     if os.path.isdir(config.out_dir):
         out_file = os.path.join(config.out_dir, filename)
     else:

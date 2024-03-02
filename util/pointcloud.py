@@ -14,7 +14,9 @@ from core.knn import find_knn_cpu
 
 def make_open3d_point_cloud(xyz, color=None):
   pcd = o3d.geometry.PointCloud()
-  pcd.points = o3d.utility.Vector3dVector(xyz.cpu().detach().numpy())
+  if not isinstance(xyz, np.ndarray):
+    xyz = xyz.cpu().detach().numpy()
+  pcd.points = o3d.utility.Vector3dVector(xyz)
   if color is not None:
     if len(color) != len(xyz):
       color = np.tile(color, (len(xyz), 1))

@@ -140,17 +140,18 @@ class KITTIPairDataset(PairDataset):
     if key not in kitti_icp_cache:
       if not os.path.exists(filename):
         # work on the downsampled xyzs, 0.05m == 5cm
-        sel0 = ME.utils.sparse_quantize(xyz0 / 0.05, return_index=True)
-        sel1 = ME.utils.sparse_quantize(xyz1 / 0.05, return_index=True)
+        _, sel0 = ME.utils.sparse_quantize(xyz0 / 0.05, return_index=True)
+        _, sel1 = ME.utils.sparse_quantize(xyz1 / 0.05, return_index=True)
 
         M = (self.velo2cam @ positions[0].T @ np.linalg.inv(positions[1].T)
              @ np.linalg.inv(self.velo2cam)).T
         xyz0_t = self.apply_transform(xyz0[sel0], M)
         pcd0 = make_open3d_point_cloud(xyz0_t)
         pcd1 = make_open3d_point_cloud(xyz1[sel1])
-        reg = o3d.registration.registration_icp(pcd0, pcd1, 0.2, np.eye(4),
-                                   o3d.registration.TransformationEstimationPointToPoint(),
-                                   o3d.registration.ICPConvergenceCriteria(max_iteration=200))
+        reg = o3d.pipelines.registration.registration_icp(
+          pcd0, pcd1, 0.2, np.eye(4),
+          o3d.pipelines.registration.TransformationEstimationPointToPoint(),
+          o3d.pipelines.registration.ICPConvergenceCriteria(max_iteration=200))
         pcd0.transform(reg.transformation)
         # pcd0.transform(M2) or self.apply_transform(xyz0, M2)
         M2 = M @ reg.transformation
@@ -185,8 +186,8 @@ class KITTIPairDataset(PairDataset):
     xyz0_th = torch.from_numpy(xyz0)
     xyz1_th = torch.from_numpy(xyz1)
 
-    sel0 = ME.utils.sparse_quantize(xyz0_th / self.voxel_size, return_index=True)
-    sel1 = ME.utils.sparse_quantize(xyz1_th / self.voxel_size, return_index=True)
+    _, sel0 = ME.utils.sparse_quantize(xyz0_th / self.voxel_size, return_index=True)
+    _, sel1 = ME.utils.sparse_quantize(xyz1_th / self.voxel_size, return_index=True)
 
     # Make point clouds using voxelized points
     pcd0 = make_open3d_point_cloud(xyz0[sel0])
